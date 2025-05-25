@@ -1,10 +1,14 @@
 import yfinance as yf
 import sys
 from dateutil import parser  # Robust ISO 8601 parser
+import pandas as pd
+
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 50)
 
 # Ensure correct usage
 if len(sys.argv) != 4:
-    print("Usage: python fetch_data.py <start_date> <end_date> <interval_days>")
+    print("Usage: python get_data.py <start_date> <end_date> <interval_days>")
     sys.exit(1)
 
 try:
@@ -33,6 +37,20 @@ if interval not in valid_intervals:
     sys.exit(1)
 
 # Fetch and save data
-data = yf.download("^GSPC", start=start_date, end=end_date, interval=interval)
-data.to_csv("stock_data.csv")
+df = yf.download("^GSPC", start=start_date, end=end_date, interval=interval)
+
+df['Return'] = df['Close'].pct_change()
+df['Lag_1'] = df['Close'].shift(1)
+df['Ret_1'] = df['Return'].shift(1)
+df['SMA_20'] = df['Close'].rolling(window=20).mean()
+df['SMA_50'] = df['Close'].rolling(window=50).mean()
+df['StandardDeviation'] = df['Close'].rolling(window=20).std()
+df['Variance'] = df['Close'].rolling(window=20).var()
+df['EMA'] = df['Close'].ewm(span=3).mean()
+df['MACD'] = df['SMA_20']-df['SMA_50']
+df['Target'] = (df['Close'].shift(-1) > df['Close']).astype(int)
+
+df.fillna(0, inplace=True)
+
+print(df)
 print(f"Saved data from {start_date} to {end_date} with interval '{interval}'")
