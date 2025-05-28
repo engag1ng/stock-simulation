@@ -1,23 +1,8 @@
-# Get data
-## Get data
-# Prepare data
-## Denormalize data
-## Add variables
-# Simulate ticks
-## Execute algorithm
-## Execute buy and sell actions
-# Evaluate
-## Report results
-## If results are good backtest
-# Backtest
-## Get real data
-## Add variables
-## Run Simulation on real data
-
 from math_sim import simulate_stock_paths, plot_simulation_report, plot_denormalized_paths
-from strategies import buy_one_sell_one, random
+from strategies import buy_one_sell_one, random_buy_sell
 import yfinance as yf
 import matplotlib.pyplot as plt
+import numpy as np
 
 def get_data(source="math_sim", ticker="^GSPC", period="10y"):
     if source == "math_sim":
@@ -52,16 +37,16 @@ def denormalize_data(paths, start_price):
         denormalized_data.append(denormalized_values)
     return denormalized_data
 
-def simulation(data, source, strategy, capital=10000, transaction_fee=0.01):
+def simulation(data, source, strategy, capital=10000, transaction_fee=0.01, yearly_custody_fee=0.02):
     stocks_owned = 0
-
-    arr_stocks_owned = []
-    arr_price = []
-    arr_capital = []
-    arr_wealth = []
              
+    results = {}
     if source == "real":
-        for row in data.itertuples():
+        arr_stocks_owned = []
+        arr_price = []
+        arr_capital = []
+        arr_wealth = []
+        for index, row in enumerate(data.itertuples()):
             current_price = row._1
             arr_price.append(current_price)
 
@@ -80,14 +65,28 @@ def simulation(data, source, strategy, capital=10000, transaction_fee=0.01):
             transaction_cost = transaction_fee * abs(action) * current_price
             capital -= current_price*action
             capital -= transaction_cost
+            if index%365 == 0:
+                capital -= capital*yearly_custody_fee
             arr_capital.append(capital)
             wealth = stocks_owned*current_price+capital
             arr_wealth.append(wealth)
             if wealth <= 0:
                     break
 
+        results['stocks_owned'] = arr_stocks_owned
+        results['price'] = arr_price
+        results['capital'] = arr_capital
+        results['wealth'] = arr_wealth
+
+
     elif source == "math_sim":
-        for path in data: # Possibilities  
+        results = []
+        for path in data: # Possibilities 
+            path_dict = {} 
+            arr_stocks_owned = []
+            arr_price = []
+            arr_capital = []
+            arr_wealth = []
             for i in range(len(path)): # Ticks
                 current_price = path[i]
                 arr_price.append(current_price)
@@ -101,21 +100,34 @@ def simulation(data, source, strategy, capital=10000, transaction_fee=0.01):
                 wealth = stocks_owned*current_price+capital
                 arr_wealth.append(wealth)
                 if wealth <= 0:
-                    break
-                
-            print(f"Net Worth: {wealth}")
-            print("\nNew Simulation")       
+                    break    
+            path_dict['stocks_owned'] = arr_stocks_owned
+            path_dict['price'] = arr_price
+            path_dict['capital'] = arr_capital
+            path_dict['wealth'] = arr_wealth
+            results.append(path_dict)
+            print(f"Net Worth: {wealth}\n")
+
+           
     else:
         raise TypeError(f"No such source: '{source}'")
 
-    return arr_price, arr_stocks_owned, arr_capital, arr_wealth
+    return results
 
-def evaluate(arr_price, arr_stocks_owned, arr_capital, arr_wealth):
+def evaluate(results):
     plt.figure(figsize=(16, 10))
+
+    # Create a colormap with enough distinct colors
+    num_paths = len(results) if isinstance(results, list) else 1
+    colors = plt.cm.viridis(np.linspace(0, 1, num_paths))
 
     # Price
     plt.subplot(2, 2, 1)
-    plt.plot(arr_price, label="Price", color="blue")
+    if isinstance(results, dict):  # Only one path
+        plt.plot(results['price'], label="Price", color="blue")
+    else:
+        for idx, path in enumerate(results):
+            plt.plot(path['price'], label=f"Path {idx+1}", color=colors[idx])
     plt.title("Price Over Time")
     plt.xlabel("Tick")
     plt.ylabel("Price")
@@ -123,7 +135,11 @@ def evaluate(arr_price, arr_stocks_owned, arr_capital, arr_wealth):
 
     # Stocks Owned
     plt.subplot(2, 2, 2)
-    plt.plot(arr_stocks_owned, label="Stocks Owned", color="orange")
+    if isinstance(results, dict):  # Only one path
+        plt.plot(results['stocks_owned'], label="Stocks Owned", color="orange")
+    else:
+        for idx, path in enumerate(results):
+            plt.plot(path['stocks_owned'], label=f"Path {idx+1}", color=colors[idx])
     plt.title("Stocks Owned Over Time")
     plt.xlabel("Tick")
     plt.ylabel("Number of Shares")
@@ -131,7 +147,11 @@ def evaluate(arr_price, arr_stocks_owned, arr_capital, arr_wealth):
 
     # Capital
     plt.subplot(2, 2, 3)
-    plt.plot(arr_capital, label="Capital", color="green")
+    if isinstance(results, dict):  # Only one path
+        plt.plot(results['capital'], label="Capital", color="green")
+    else:
+        for idx, path in enumerate(results):
+            plt.plot(path['capital'], label=f"Path {idx+1}", color=colors[idx])
     plt.title("Capital Over Time")
     plt.xlabel("Tick")
     plt.ylabel("Capital ($)")
@@ -139,19 +159,24 @@ def evaluate(arr_price, arr_stocks_owned, arr_capital, arr_wealth):
 
     # Net Worth
     plt.subplot(2, 2, 4)
-    plt.plot(arr_wealth, label="Net Worth", color="purple")
+    if isinstance(results, dict):  # Only one path
+        plt.plot(results['wealth'], label="Net Worth", color="purple")
+    else:
+        for idx, path in enumerate(results):
+            plt.plot(path['wealth'], label=f"Path {idx+1}", color=colors[idx])
     plt.title("Net Worth Over Time")
     plt.xlabel("Tick")
     plt.ylabel("Net Worth ($)")
     plt.grid(True)
 
+    # Show a legend for different paths
     plt.tight_layout()
     plt.show()
 
-    print(f"Net gain: {arr_wealth[-1] - arr_wealth[0]}")
+    print(f"Net gain: {results[-1]['wealth'][-1] - results[0]['wealth'][0]}" if isinstance(results, list) else f"Net gain: {results['wealth'][-1] - results['wealth'][0]}")
 
-data, source, ticker, period = get_data("real", period="10y")
+data, source, ticker, period = get_data("math_sim", ticker="AAPL", period="10y")
 
-arr_price, arr_stocks_owned, arr_capital, arr_wealth = simulation(data, source, random, 10000000)
+results = simulation(data, source, random_buy_sell, 1000)
 
-evaluate(arr_price, arr_stocks_owned, arr_capital, arr_wealth)
+evaluate(results)
