@@ -41,16 +41,45 @@ def simulation(data, source, strategy, capital=10000, transaction_fee=0.01, year
     stocks_owned = 0
              
     results = {}
+    stop_losses_registry = {}
+    stop_win_registry = {}
+
     if source == "real":
         arr_stocks_owned = []
         arr_price = []
         arr_capital = []
         arr_wealth = []
-        for index, row in enumerate(data.itertuples()):
+        for index, row in enumerate(data.itertuples()): # Ticks
             current_price = row._1
+
             arr_price.append(current_price)
 
-            action = strategy(current_price, stocks_owned, capital)
+            action, stop_loss, stop_win = strategy(stocks_owned, current_price, capital)
+
+            # Add stop losses / wins
+            if stop_loss[0] in stop_losses_registry:
+                stop_losses_registry[stop_loss[0]] += stop_loss[1]
+            else:
+                stop_losses_registry[stop_loss[0]] = stop_loss[1]
+
+            if stop_win[0] in stop_win_registry:
+                stop_win_registry[stop_win[0]] += stop_win[1]
+            else:
+                stop_win_registry[stop_win[0]] = stop_win[1]
+
+            # Execute stop losses / wins
+            for key, value in stop_losses_registry.items():
+                if current_price < float(key):
+                    action -= value
+                    stop_losses_registry.pop(key)
+
+            for key, value in stop_win_registry.items():
+                if current_price > float(key):
+                    action += value
+                    stop_win_registry.pop(key)
+
+            
+            # Execute buying / selling
             if action < 0:  # Selling
                 if abs(action) > stocks_owned:
                     action = -stocks_owned  # Clamp sell to max stocks owned
@@ -89,13 +118,42 @@ def simulation(data, source, strategy, capital=10000, transaction_fee=0.01, year
             arr_wealth = []
             for i in range(len(path)): # Ticks
                 current_price = path[i]
+
                 arr_price.append(current_price)
-                bought_stocks = strategy(stocks_owned, current_price, capital)
-                stocks_owned += bought_stocks
+
+                action, stop_loss, stop_win = strategy(stocks_owned, current_price, capital)
+
+                # Add stop losses / wins
+                if stop_loss:
+                    if stop_loss[0] in stop_losses_registry:
+                        stop_losses_registry[stop_loss[0]] += stop_loss[1]
+                    else:
+                        stop_losses_registry[stop_loss[0]] = stop_loss[1]
+
+                if stop_win:
+                    if stop_win[0] in stop_win_registry:
+                        stop_win_registry[stop_win[0]] += stop_win[1]
+                    else:
+                        stop_win_registry[stop_win[0]] = stop_win[1]
+
+                # Execute stop losses / wins
+                for key, value in stop_losses_registry.items():
+                    if current_price < float(key):
+                        action -= value
+                        stop_losses_registry.pop(key)
+
+                for key, value in stop_win_registry.items():
+                    if current_price > float(key):
+                        action += value
+                        stop_win_registry.pop(key)
+                        
+                stocks_owned += action
                 arr_stocks_owned.append(stocks_owned)
-                transaction_cost = transaction_fee * abs(bought_stocks) * current_price
-                capital -= current_price*bought_stocks
+                transaction_cost = transaction_fee * abs(action) * current_price
+                capital -= current_price*action
                 capital -= transaction_cost
+                if i%365 == 0:
+                    capital -= capital*yearly_custody_fee
                 arr_capital.append(capital)
                 wealth = stocks_owned*current_price+capital
                 arr_wealth.append(wealth)
@@ -175,7 +233,7 @@ def evaluate(results):
 
     print(f"Net gain: {results[-1]['wealth'][-1] - results[0]['wealth'][0]}" if isinstance(results, list) else f"Net gain: {results['wealth'][-1] - results['wealth'][0]}")
 
-data, source, ticker, period = get_data("math_sim", ticker="AAPL", period="10y")
+data, source, ticker, period = get_data("math_sim", ticker="^GSPC", period="10y")
 
 results = simulation(data, source, random_buy_sell, 1000)
 
