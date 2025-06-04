@@ -15,5 +15,5 @@ def standard_deviation(df, n=20):
 def variance(df, n=20):
     return df['Close'].rolling(window=n).var().fillna(0, inplace=True)
 
-def ema(df, n=20, com=None, span=None, halflife=None, alpha=None):
-    return df['Close'].ewm(min_periods=n, com=com, span=span, halflife=halflife, alpha=alpha).mean().fillna(0, inplace=True)
+def ema(df, span=None, halflife=None):
+    return df['Close'].ewm(span=span, halflife=halflife).mean().fillna(0)

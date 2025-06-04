@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import wasserstein_distance
 from collections import Counter
 
-def simulate_stock_paths(ticker='AAPL', num_paths=20, path_length=252, period='10y', verbose=True):
+def simulate_stock_paths(ticker, num_paths, path_length, period, verbose):
     """
     Simulate stochastic volatility paths for a stock using best-fit parameters from grid search.
     
@@ -21,9 +21,7 @@ def simulate_stock_paths(ticker='AAPL', num_paths=20, path_length=252, period='1
 
     # --- Model constants derived from real data ---
     mu = real_log_returns.mean() * 252
-    print("Mu: ", mu)
     v0 = real_log_returns.var() * 252
-    print("Var: ", v0)
     theta = v0
     S0 = 1
     dt = 1 / 252
@@ -133,17 +131,6 @@ def plot_simulation_report(simulated_paths, simulated_log_returns, real_log_retu
 
     plt.tight_layout()
     plt.show()
-
-if __name__ == "__main__":
-    paths, sim_returns, real_returns = simulate_stock_paths(
-        ticker="^GSPC",
-        num_paths=20,
-        path_length=125,
-        period="10y",
-        verbose=True
-    )
-    plot_simulation_report(paths, sim_returns, real_returns)
-    print(paths[0])
 
 def plot_denormalized_paths(denormalized_paths):
     import matplotlib.pyplot as plt
