@@ -40,7 +40,7 @@ Stocks and CFD's are a great way to start trading and earn some money. But what 
 4. Make improvements to the documentation.
 
 ## 📃 License
-This project GNU GPLv3 licensed. Please have a look at the LICENSE.md for more information.
+This project is GNU GPLv3 licensed. Please have a look at the LICENSE.md for more information.
 
 ## 🗨️ Contact
 Please contact me under constantin.reinhold@gmx.net
