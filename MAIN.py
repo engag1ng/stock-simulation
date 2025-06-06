@@ -1,10 +1,12 @@
 import yfinance as yf
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from getData import get_real_data, get_simulated_data
 from mathSim import simulate_stock_paths
-from strategies import buy_one_sell_one, random_buy_sell
+from strategies import strategy_three_ema_crossover
+from indicators import indicator_three_ema_crossover
 
 def apply_stop_conditions(current_price, registry, condition_fn):
     actions_to_take = 0
@@ -21,7 +23,12 @@ def apply_stop_conditions(current_price, registry, condition_fn):
     return actions_to_take
 
 
-def run_strategy_loop(prices, strategy, capital, transaction_fee, yearly_custody_fee):
+def run_strategy_loop(data, strategy, capital, transaction_fee, yearly_custody_fee):
+    # --- Precompute features and indictators ---
+    data['indicator_three_ema_crossover'] = indicator_three_ema_crossover(data)
+
+
+    prices = data['Close'].values
     stocks_owned = 0
     stop_losses_registry = {}
     stop_win_registry = {}
@@ -40,7 +47,7 @@ def run_strategy_loop(prices, strategy, capital, transaction_fee, yearly_custody
 
         arr_price.append(current_price)
 
-        action, stop_loss, stop_win = strategy(stocks_owned, current_price, capital)
+        action, stop_loss, stop_win = strategy(data[:i+1], stocks_owned, current_price, capital)
 
         if stop_loss:
             stop_losses_registry[float(stop_loss[0])] = stop_losses_registry.get(float(stop_loss[0]), 0) + stop_loss[1]
@@ -80,27 +87,29 @@ def run_strategy_loop(prices, strategy, capital, transaction_fee, yearly_custody
         'wealth': arr_wealth
     }
 
-# Simulate strategy
+# --- Parameters ---
 capital=10000
 transaction_fee=0.01
 yearly_custody_fee=0.02
-strategy = random_buy_sell
+strategy = strategy_three_ema_crossover
 ticker = "^GSPC"
 real_period = "10y"
 sim_period = "10y"
 
 
+# --- Simulation ---
 real_data = get_real_data(ticker, real_period)
 
-real_result = run_strategy_loop(real_data['Close'].values, strategy, capital, transaction_fee, yearly_custody_fee)
+real_result = run_strategy_loop(real_data, strategy, capital, transaction_fee, yearly_custody_fee)
 
 sim_data = get_simulated_data(ticker, sim_period, 20, True)
 sim_results = []
 for path in sim_data:
-    result = run_strategy_loop(path, strategy, capital, transaction_fee, yearly_custody_fee)
+    df_path = pd.DataFrame({'Close': path})
+    result = run_strategy_loop(df_path, strategy, capital, transaction_fee, yearly_custody_fee)
     sim_results.append(result)
 
-# Evaluate
+# --- Evaluation ---
 fig, axs = plt.subplots(2, 2, figsize=(16, 10))
 fig.suptitle("Strategy Evaluation Report", fontsize=16)
 
