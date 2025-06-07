@@ -74,6 +74,9 @@ class MyCustomStrategy(Strategy):
 
 ## ⏱️ Roadmap
 - [ ] Implement new strategies
+- [ ] Add extensive documentation
+- [ ] Improve simulation sequencing
+- [ ] Improve UI
 
 ## 🤝 Contributions
 **Community contributions are very welcome.** Please see below how you can contribute...
