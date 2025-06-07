@@ -1,3 +1,27 @@
+"""
+Stock Trading Strategy Simulator and Evaluator
+
+This module provides a framework to simulate and evaluate stock trading strategies
+on both real and simulated market data. It includes functionality to:
+
+- Fetch real historical stock data.
+- Generate simulated stock price paths.
+- Run a trading strategy over time with capital management, transaction fees,
+  yearly custody fees, and stop loss/win conditions.
+- Visualize the strategy performance via price, capital, and net worth plots.
+- Summarize results with statistical metrics for simulated outcomes.
+
+Key components:
+- `apply_stop_conditions`: Applies stop loss or stop win triggers to positions.
+- `run_strategy_loop`: Core loop running the strategy through market data and managing portfolio.
+- Integration with user interface (UI) to set parameters.
+- Uses strategy and indicator registries for flexible strategy selection and feature precomputation.
+
+Requires:
+- yfinance, matplotlib, numpy, pandas
+- Custom modules: getData, mathSim, ui, strategies, indicators
+
+"""
 import yfinance as yf
 import matplotlib.pyplot as plt
 import numpy as np
@@ -5,10 +29,30 @@ import pandas as pd
 
 from getData import get_real_data, get_simulated_data
 from mathSim import simulate_stock_paths
-from strategies import strategy_three_ema_crossover
-from indicators import indicator_three_ema_crossover
+from ui import spawn_ui
+from strategies.base import Strategy
+import strategies.three_ema_crossover
+from indicators import indicator_registry
+from indicators.ema_crossover import indicator_three_ema_crossover
 
 def apply_stop_conditions(current_price, registry, condition_fn):
+    """
+    Check and apply stop loss or stop win conditions.
+
+    Args:
+        current_price (float): Current market price.
+        registry (dict): Dictionary mapping price levels to number of shares held
+                         under stop conditions.
+        condition_fn (callable): Function taking (current_price, stop_price) and
+                                 returning True if stop condition triggered.
+
+    Returns:
+        int: Number of shares to be bought/sold as a result of triggered stop conditions.
+
+    Side effects:
+        Removes triggered stop conditions from the registry.
+
+    """
     actions_to_take = 0
     keys_to_remove = []
 
@@ -23,10 +67,35 @@ def apply_stop_conditions(current_price, registry, condition_fn):
     return actions_to_take
 
 
-def run_strategy_loop(data, strategy, capital, transaction_fee, yearly_custody_fee):
-    # --- Precompute features and indictators ---
-    data['indicator_three_ema_crossover'] = indicator_three_ema_crossover(data)
+def run_strategy_loop(data, strategy, capital, transaction_fee, yearly_custody_fee, to_precompute):
+    """
+    Simulate trading strategy over provided market data.
 
+    Args:
+        data (pandas.DataFrame): Market data with at least a 'Close' column.
+        strategy (Strategy): Trading strategy instance with an execute method.
+        capital (float): Initial capital available for trading.
+        transaction_fee (float): Proportional transaction fee per trade (e.g., 0.001 for 0.1%).
+        yearly_custody_fee (float): Annual custody fee rate deducted from capital yearly.
+        to_precompute (list): List of indicator functions to apply on data before simulation.
+
+    Returns:
+        dict: Dictionary containing time series lists:
+            - 'price': Market prices over time.
+            - 'capital': Available capital over time.
+            - 'stocks_owned': Number of shares owned over time.
+            - 'wealth': Total net worth (capital + stocks value) over time.
+
+    Notes:
+        - Applies precomputed features for strategy decision making.
+        - Enforces stop loss and stop win logic.
+        - Accounts for transaction costs and custody fees.
+        - Stops simulation if net worth reaches zero or below.
+
+    """
+    # --- Precompute features and indictators ---
+    for stat in to_precompute:
+        data[stat.__name__] = stat(data)
 
     prices = data['Close'].values
     stocks_owned = 0
@@ -47,7 +116,7 @@ def run_strategy_loop(data, strategy, capital, transaction_fee, yearly_custody_f
 
         arr_price.append(current_price)
 
-        action, stop_loss, stop_win = strategy(data[:i+1], stocks_owned, current_price, capital)
+        action, stop_loss, stop_win = strategy.execute(data[:i+1], stocks_owned, current_price, capital)
 
         if stop_loss:
             stop_losses_registry[float(stop_loss[0])] = stop_losses_registry.get(float(stop_loss[0]), 0) + stop_loss[1]
@@ -88,25 +157,28 @@ def run_strategy_loop(data, strategy, capital, transaction_fee, yearly_custody_f
     }
 
 # --- Parameters ---
-capital=10000
-transaction_fee=0.01
-yearly_custody_fee=0.02
-strategy = strategy_three_ema_crossover
-ticker = "^GSPC"
-real_period = "10y"
-sim_period = "10y"
+params = spawn_ui()
 
+capital=params[0]
+transaction_fee=params[1]
+yearly_custody_fee=params[2]
+strategy = globals().get(params[3])
+ticker = params[4]
+real_period = params[5]
+sim_period = params[6]
+precompute_strings = [name.strip() for name in params[7].split(",") if name.strip()]
+precompute = [globals().get(func_name) for func_name in precompute_strings]
 
 # --- Simulation ---
 real_data = get_real_data(ticker, real_period)
 
-real_result = run_strategy_loop(real_data, strategy, capital, transaction_fee, yearly_custody_fee)
+real_result = run_strategy_loop(real_data, strategy, capital, transaction_fee, yearly_custody_fee, precompute)
 
 sim_data = get_simulated_data(ticker, sim_period, 20, True)
 sim_results = []
 for path in sim_data:
     df_path = pd.DataFrame({'Close': path})
-    result = run_strategy_loop(df_path, strategy, capital, transaction_fee, yearly_custody_fee)
+    result = run_strategy_loop(df_path, strategy, capital, transaction_fee, yearly_custody_fee, precompute)
     sim_results.append(result)
 
 # --- Evaluation ---

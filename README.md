@@ -28,6 +28,50 @@ Stocks and CFD's are a great way to start trading and earn some money. But what 
 
 ## ℹ️ Documentation
 
+## Add a New Feature
+
+**Location:** `features/`
+
+1. Create a new file in the `features/` directory.
+2. Define your feature function, for example:
+
+```python
+def feature_daily_return(df):
+    return df['Close'].pct_change().fillna(0)
+```
+
+## Add a New Indicator
+
+**Location:** `indicators/`
+
+1. Create a new file or add to an existing one in the `indicators/` directory.
+2. Use the `@register_indicator` decorator to register it automatically:
+
+```python
+from indicators import register_indicator
+
+@register_indicator
+def indicator_my_custom(df):
+    return df['Close'].rolling(window=10).mean()
+```
+
+## Add a New Strategy
+
+**Location:** `strategies/`
+
+1. Create a new file or add to an existing one in the `strategies/` directory.
+2. Subclass the `Strategy` base class and use the `@Strategy.register` decorator with a unique name:
+
+```python
+from strategies.base import Strategy
+
+@Strategy.register("my_custom_strategy")
+class MyCustomStrategy(Strategy):
+    def execute(self, df, owned_stocks, price, capital):
+        # Your buy/sell logic here
+        return 0.1, [price * 0.95, 0.1], [price * 1.05, 0.1]
+```
+
 ## ⏱️ Roadmap
 - [ ] Implement new strategies
 
