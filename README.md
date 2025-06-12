@@ -1,4 +1,4 @@
-# Stock simulator
+# Metis
 CFD trading simulation for back- and forward testing different trading strategies.
 
 <img src="https://github.com/user-attachments/assets/ae2d0c41-c6ba-4ae9-8410-69bfeb31da9c" width=75% height=75%>
