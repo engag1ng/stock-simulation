@@ -28,8 +28,11 @@ Stocks and CFD's are a great way to start trading and earn some money. But what 
 
 ## ℹ️ Documentation
 Before adding new features, indicators or strategies, it is important to understand, what each one is intended for.
+
 Features: provide the ability to calculate values (columns) of data, that help make informed decisions for trading or just help to calcuate other values.
+
 Indicators: typically returns a value between -10 and 10 which indicates, if we should buy (positive) or sell (negative) and how much, where 0 indicates holding, 10 indicates going all-in bullish and -10 indicates all-in bearish.
+
 Strategies: Combining features and indicators to create an algorithm, that makes trading decisions, like buying / selling and setting stop-loss/take-profit. 
 
 ## Add a New Feature
