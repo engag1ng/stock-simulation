@@ -1,35 +1,44 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0" version="27.1.4">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0" version="27.1.5">
   <diagram name="Page-1" id="G_cRmpAie2pGScI5CDjl">
-    <mxGraphModel dx="534" dy="274" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="548" dy="282" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-1" target="eZlKHMHMSrx3J_TUm8ai-9">
+        <mxCell id="eZlKHMHMSrx3J_TUm8ai-1" value="&lt;div&gt;Database&lt;/div&gt;&lt;div&gt;(SQLite)&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+          <mxGeometry x="395" y="250" width="85" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="RdBouck0iSkItcD6wo9v-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-2" target="RdBouck0iSkItcD6wo9v-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-1" value="&lt;div&gt;Database&lt;/div&gt;&lt;div&gt;(PostgreSQL)&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
-          <mxGeometry x="395" y="230" width="85" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-2" target="eZlKHMHMSrx3J_TUm8ai-1">
+        <mxCell id="RdBouck0iSkItcD6wo9v-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-2" target="eZlKHMHMSrx3J_TUm8ai-4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-2" value="&lt;div&gt;UI&lt;/div&gt;&lt;div&gt;(NodeJS)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="eZlKHMHMSrx3J_TUm8ai-2" value="&lt;div&gt;UI&lt;/div&gt;&lt;div&gt;(NodeJS)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="240" y="245" width="85" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-3" value="&lt;div&gt;Data getter&lt;/div&gt;&lt;div&gt;(Python)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="525" y="350" width="80" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-4" value="&lt;div&gt;Strategy simulation, evaluation&lt;/div&gt;&lt;div&gt;(C++)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="510" y="180" width="110" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-4" target="eZlKHMHMSrx3J_TUm8ai-1">
+        <mxCell id="RdBouck0iSkItcD6wo9v-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-3" target="RdBouck0iSkItcD6wo9v-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-3" target="eZlKHMHMSrx3J_TUm8ai-1">
+        <mxCell id="eZlKHMHMSrx3J_TUm8ai-3" value="&lt;div&gt;Data getter&lt;/div&gt;&lt;div&gt;(Python)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="265" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="RdBouck0iSkItcD6wo9v-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-4" target="RdBouck0iSkItcD6wo9v-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eZlKHMHMSrx3J_TUm8ai-9" value="&lt;div&gt;Data filler&lt;/div&gt;&lt;div&gt;(Python)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="530" y="260" width="80" height="40" as="geometry" />
+        <mxCell id="eZlKHMHMSrx3J_TUm8ai-4" value="&lt;div&gt;Strategy simulation, evaluation&lt;/div&gt;&lt;div&gt;(C++)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="90" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="RdBouck0iSkItcD6wo9v-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="eZlKHMHMSrx3J_TUm8ai-9" target="RdBouck0iSkItcD6wo9v-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eZlKHMHMSrx3J_TUm8ai-9" value="&lt;div&gt;Feature filler&lt;br&gt;&lt;/div&gt;&lt;div&gt;(Python)&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="180" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="RdBouck0iSkItcD6wo9v-1" value="&lt;div&gt;DB API&lt;/div&gt;&lt;div&gt;(Python)&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="407.5" y="140" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RdBouck0iSkItcD6wo9v-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="RdBouck0iSkItcD6wo9v-1" target="eZlKHMHMSrx3J_TUm8ai-1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
